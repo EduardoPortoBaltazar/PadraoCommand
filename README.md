@@ -2,14 +2,53 @@
 
 # Sobre o projeto
 
-https://wmazoni-sds1.netlify.app
+Exemplo de utilização do padrão Command com invoker.
 
-Big Game Survey é uma aplicação full stack web e mobile construída durante a 1ª edição da **Semana DevSuperior** (#sds1), evento organizado pela [DevSuperior](https://devsuperior.com "Site da DevSuperior").
+## Entendeno Arquitetura
 
-A aplicação consiste em uma pesquisa de preferência de games, onde os dados são coletados no app mobile, e depois são listados no app web, que também apresenta um dashboard com gráficos baseados nestes dados.
+- Interfaces
+Criado a classe de interface, onde 
 
-## Layout mobile
-![Mobile 1](https://github.com/acenelio/assets/raw/main/sds1/mobile1.png) ![Mobile 2](https://github.com/acenelio/assets/raw/main/sds1/mobile2.png)
+```delphi
+
+unit Oficina.Controller.Servicos.Interfaces;
+
+interface
+
+uses
+  System.Classes;
+type
+
+  iCommand = interface
+    ['{0CF36E3F-9555-463A-A392-079B1CDB5B03}']
+    function Execute: iCommand;
+  end;
+
+  iInvoker = interface
+    ['{F2F87709-95E7-4ED6-8FB6-DD7F457434D6}']
+    function Add(Value: iCommand): iInvoker;
+    function Execute: iInvoker;
+  end;
+
+  iServicos = interface
+    ['{D7B31FE9-069E-4236-B8C4-78681C80AED5}']
+    function TrocarOleo: iServicos;
+    function TrocarVelas: iServicos;
+    function PneuFurado: iServicos;
+    function Revisao: iServicos;
+    function FinalizarServico: iServicos;
+  end;
+
+implementation
+
+end.
+
+
+```
+
+
+
+--![Mobile 1](https://github.com/acenelio/assets/raw/main/sds1/mobile1.png) ![Mobile 2](https://github.com/acenelio/assets/raw/main/sds1/mobile2.png)
 
 ## Layout web
 ![Web 1](https://github.com/acenelio/assets/raw/main/sds1/web1.png)
