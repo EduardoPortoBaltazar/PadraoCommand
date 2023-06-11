@@ -1,16 +1,19 @@
 # Delphi - Exemplo de padrão Command
 
+Command é um dos 11 padrões comportamentais dentre os 23 padrões de projeto de software do GOF. Na programação orientada a objeto, o command é um padrão no qual um objeto é usado para encapsular toda informação necessária para executar uma ação ou acionar um evento em um momento posterior.
+
 # Sobre o projeto
 
 Exemplo de utilização do padrão Command com invoker.
 
+ ![TelaAplicacao](https://github.com/EduardoPortoBaltazar/PadraoCommand/blob/main/assets/TelaAplicacao.PNG))
+ 
 ## Entendeno Arquitetura
 
-- Interfaces
+# Interfaces
 Criado a classe de interface, onde teremos todos os serviços possiveis da oficina.
 
 ```delphi
-
   iServicos = interface
     ['{D7B31FE9-069E-4236-B8C4-78681C80AED5}']
     function TrocarOleo: iServicos;
@@ -19,76 +22,125 @@ Criado a classe de interface, onde teremos todos os serviços possiveis da ofici
     function Revisao: iServicos;
     function FinalizarServico: iServicos;
   end;
-
-
-
 ```
 
+# Classe de Serviços
+Classe responsável por implementar a Interface de serviços
 
+```delphi
 
---![Mobile 1](https://github.com/acenelio/assets/raw/main/sds1/mobile1.png) ![Mobile 2](https://github.com/acenelio/assets/raw/main/sds1/mobile2.png)
+type
+  TControllerOfficina = class(TInterfacedObject, iServicos)
+  private
+    FEscreveLog: TEscreveLog;
+  public
+    function TrocarOleo: iServicos;
+    function TrocarVelas: iServicos;
+    function PneuFurado: iServicos;
+    function Revisao: iServicos;
+    function FinalizarServico: iServicos;
 
-## Layout web
-![Web 1](https://github.com/acenelio/assets/raw/main/sds1/web1.png)
-
-![Web 2](https://github.com/acenelio/assets/raw/main/sds1/web2.png)
-
-## Modelo conceitual
-![Modelo Conceitual](https://github.com/acenelio/assets/raw/main/sds1/modelo-conceitual.png)
-
-# Tecnologias utilizadas
-## Back end
-- Java
-- Spring Boot
-- JPA / Hibernate
-- Maven
-## Front end
-- HTML / CSS / JS / TypeScript
-- ReactJS
-- React Native
-- Apex Charts
-- Expo
-## Implantação em produção
-- Back end: Heroku
-- Front end web: Netlify
-- Banco de dados: Postgresql
-
-# Como executar o projeto
-
-## Back end
-Pré-requisitos: Java 11
-
-```bash
-# clonar repositório
-git clone https://github.com/devsuperior/sds1-wmazoni
-
-# entrar na pasta do projeto back end
-cd backend
-
-# executar o projeto
-./mvnw spring-boot:run
+    constructor create(AEscreveLog: TEscreveLog);
+    destructor Destroy; override;
+    class function New (AEscreveLog: TEscreveLog) : iServicos;
+  end;
 ```
 
-## Front end web
-Pré-requisitos: npm / yarn
+# Interface Command
+Na classe de Interfaces, Deve ser criado uma interface para Command, com a função Execute.
 
-```bash
-# clonar repositório
-git clone https://github.com/devsuperior/sds1-wmazoni
+```delphi
+  iCommand = interface
+    ['{0CF36E3F-9555-463A-A392-079B1CDB5B03}']
+    function Execute: iCommand;
+  end;
+````
 
-# entrar na pasta do projeto front end web
-cd front-web
+# Uma Classe para cada Responsabilidade 
+Seguindo o principio da responsabilidade única, deve ser criado uma classe para cada função, implementando o Command e recebendo 
+a interface principal como Parent.
 
-# instalar dependências
-yarn install
+```delphi
+type
+  TControllerServicosPneuFurado = class (TInterfacedObject, iCommand)
 
-# executar o projeto
-yarn start
+  private
+    FParent: iServicos;
+  public
+    function Execute: iCommand;
+
+    constructor create(Parent: iServicos);
+    destructor Destroy; override;
+    class function New(Parent: iServicos): iCommand;
+  end;
 ```
+
+# Interface Invoker
+Deve ser implementado a interface invoker para receber comandos e executar
+```delphi
+  iInvoker = interface
+    ['{F2F87709-95E7-4ED6-8FB6-DD7F457434D6}']
+    function Add(Value: iCommand): iInvoker;
+    function Execute: iInvoker;
+  end;
+  ```
+  
+  # Classe Invoker
+  Implementação para receber Command e executar uma lista de Command
+  
+  ```Delphi
+  type
+  TControllerServicosInvoker = class (TInterfacedObject, iInvoker)
+
+    private
+      FList: TList<iCommand>;
+    public
+      function Add(Value: iCommand): iInvoker;
+      function Execute: iInvoker;
+
+      constructor create;
+      destructor Destroy; override;
+      class function New: iInvoker;
+end;
+```
+
+# Classe de Serviço Utilizando Vários Comandos
+```Delphi
+function TControllerOfficina.Revisao: iServicos;
+begin
+  FEscreveLog('Iniciar Revisão...');
+
+  TControllerServicosInvoker
+    .New
+      .Add(TControllerServicosTrocarOleo
+            .New(Self))
+      .Add(TControllerServicosTrocarVelas
+            .New(Self))
+      .Add(TControllerServicosPneuFurado
+            .New(Self))
+      .Add(TControllerServicosFinaliar
+            .New(Self))
+      .Execute;
+end;
+```
+
+# Classe Serviço executando cada Command
+```Delphi
+function TControllerOfficina.PneuFurado: iServicos;
+begin
+  Result := Self;
+
+  FEscreveLog('Trocando os pneus gastos...');
+  Sleep(3000);
+end;
+```
+
 
 # Autor
 
-Wellington Mazoni de Andrade
+Eduardo Porto Baltazar
 
-https://www.linkedin.com/in/wmazoni
+https://curriculo-eduardo-porto.web.app/
+
+https://www.linkedin.com/in/eduardo-porto-baltazar/
 
