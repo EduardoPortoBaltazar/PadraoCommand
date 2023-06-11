@@ -8,7 +8,7 @@ Exemplo de utilização do padrão Command com invoker.
 
  ![TelaAplicacao](https://github.com/EduardoPortoBaltazar/PadraoCommand/blob/main/assets/TelaAplicacao.PNG))
  
-## Entendeno Arquitetura
+## Entendendo Arquitetura
 
 # Interfaces
 Criado a classe de interface, onde teremos todos os serviços possiveis da oficina.
@@ -59,6 +59,7 @@ Na classe de Interfaces, Deve ser criado uma interface para Command, com a funç
 # Uma Classe para cada Responsabilidade 
 Seguindo o principio da responsabilidade única, deve ser criado uma classe para cada função, implementando o Command e recebendo 
 a interface principal como Parent.
+Dessa forma a função PneuFurado é executada na classe de serviços.
 
 ```delphi
 type
@@ -73,6 +74,12 @@ type
     destructor Destroy; override;
     class function New(Parent: iServicos): iCommand;
   end;
+  
+function TControllerServicosPneuFurado.Execute: iCommand;
+begin
+  Result := Self;
+  FParent.PneuFurado;
+end;
 ```
 
 # Interface Invoker
